@@ -4,7 +4,7 @@
 apiVersion: radix.equinor.com/v1
 kind: RadixApplication
 metadata:
-  name: oneseismic
+  name: nils-oneseismic
 spec:
   build:
     useBuildKit: true
@@ -16,7 +16,10 @@ spec:
     # small resources environment
     - name: test
       build:
-        from: radix_test
+        from: radix_playground
+    - name: test-large
+      build:
+        from: radix_test_large
     # environment that can be used for performance testing
     # environment must be stopped when not needed
     - name: test-large
@@ -35,90 +38,10 @@ spec:
       publicPort: http
       monitoringConfig:
         portName: metrics
-      identity:
-        azure:
-          clientId: fd162526-89a0-448a-979f-655c0717db52
       environmentConfig:
         - environment: prod
-          variables:
-            ONESEISMIC_API_PORT: "8080"
-            ONESEISMIC_API_CACHE_SIZE: "512" # MB
-            ONESEISMIC_API_METRICS: "true"
-            ONESEISMIC_API_METRICS_PORT: "8081"
-            ONESEISMIC_API_TRUSTED_PROXIES: ""
-            ONESEISMIC_API_BLOCKED_IPS: ""
-            ONESEISMIC_API_BLOCKED_USER_AGENTS: ""
-            OPENVDS_AZURE_IOMANAGER_THREAD_COUNT: ""
-          secretRefs:
-            azureKeyVaults:
-              - name: S067-RadixKeyvault
-                useAzureIdentity: true
-                items:
-                  - name: prod-allowlist
-                    envVar: ONESEISMIC_API_STORAGE_ACCOUNTS
-          monitoring: true
-          resources:
-            requests:
-              memory: "8192Mi"
-              cpu: "2000m"
-          horizontalScaling:
-            minReplicas: 1
-            maxReplicas: 1
+          replicas: 0
         - environment: test
-          variables:
-            ONESEISMIC_API_PORT: "8080"
-            ONESEISMIC_API_CACHE_SIZE: "128" # MB
-            ONESEISMIC_API_METRICS: "false"
-            ONESEISMIC_API_METRICS_PORT: "8081"
-            ONESEISMIC_API_TRUSTED_PROXIES: ""
-            ONESEISMIC_API_BLOCKED_IPS: ""
-            ONESEISMIC_API_BLOCKED_USER_AGENTS: ""
-            OPENVDS_AZURE_IOMANAGER_THREAD_COUNT: ""
-          secretRefs:
-            azureKeyVaults:
-              - name: S067-RadixKeyvault
-                useAzureIdentity: true
-                items:
-                  - name: test-allowlist
-                    envVar: ONESEISMIC_API_STORAGE_ACCOUNTS
-          monitoring: true
-          resources:
-            requests:
-              memory: "512Mi"
-              cpu: "100m"
-          horizontalScaling:
-            minReplicas: 0
-            maxReplicas: 1
-            triggers:
-            - name: cron
-              cron:
-                timezone: Europe/Oslo
-                start: 0 7 * * 1-5 # 07:00 Monday - Friday
-                end: 0 21 * * 1-5 # 21:00 Monday - Friday
-                desiredReplicas: 1
+          replicas: 0
         - environment: test-large
           replicas: 0
-          variables:
-            ONESEISMIC_API_PORT: "8080"
-            ONESEISMIC_API_CACHE_SIZE: "0" # MB
-            ONESEISMIC_API_METRICS: "false"
-            ONESEISMIC_API_METRICS_PORT: "8081"
-            ONESEISMIC_API_TRUSTED_PROXIES: ""
-            ONESEISMIC_API_BLOCKED_IPS: ""
-            ONESEISMIC_API_BLOCKED_USER_AGENTS: ""
-            OPENVDS_AZURE_IOMANAGER_THREAD_COUNT: ""
-          secretRefs:
-            azureKeyVaults:
-              - name: S067-RadixKeyvault
-                useAzureIdentity: true
-                items:
-                  - name: test-allowlist
-                    envVar: ONESEISMIC_API_STORAGE_ACCOUNTS
-          monitoring: true
-          resources:
-            requests:
-              memory: "8192Mi"
-              cpu: "2000m"
-          horizontalScaling:
-            minReplicas: 1
-            maxReplicas: 1
