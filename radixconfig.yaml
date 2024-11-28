@@ -20,11 +20,6 @@ spec:
     - name: test-large
       build:
         from: radix_test_large
-    # environment that can be used for performance testing
-    # environment must be stopped when not needed
-    - name: test-large
-      build:
-        from: radix_test_large
   components:
     - name: server
       dockerfileName: Dockerfile
