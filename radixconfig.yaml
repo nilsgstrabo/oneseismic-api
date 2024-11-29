@@ -8,6 +8,7 @@ metadata:
 spec:
   build:
     useBuildKit: true
+    useBuildCache: false
   environments:
     # stable production branch users are supposed to use
     - name: prod
